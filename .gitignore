@@ -196,4 +196,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+#Notas
+pythonNotes.txt
+
 # End of https://www.toptal.com/developers/gitignore/api/python,windows,linux
