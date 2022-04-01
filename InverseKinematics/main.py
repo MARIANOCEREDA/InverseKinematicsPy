@@ -41,6 +41,7 @@ if __name__ == "__main__":
     R = Robot(dhMatrix,qlims,toolMatrix,qOffset,baseMatrix,T)
     p04 = R.calculatePosition()
     q1 = R.q1Calculate(p04)
+    q2,p14 = R.q2Calculate(p04,q1)
     
 
 
