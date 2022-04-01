@@ -22,5 +22,3 @@ def limitsVerification(qlims:np.array,q:np.array) -> Dict:
 
     return {"condition":condition,"q":qCorrect}
 
-def toRad():
-    pass
