@@ -20,4 +20,7 @@ def limitsVerification(qlims:np.array,q:np.array) -> Dict:
             qCorrect = item
             condition = False
 
-    return {"condition":True,"q":qCorrect}
+    return {"condition":condition,"q":qCorrect}
+
+def toRad():
+    pass
