@@ -39,9 +39,13 @@ if __name__ == "__main__":
 
     #Coding of inverse kinematics
     R = Robot(dhMatrix,qlims,toolMatrix,qOffset,baseMatrix,T)
-    p04 = R.calculatePosition()
-    q1 = R.q1Calculate(p04)
-    q2,p14 = R.q2Calculate(p04,q1)
+    
+    # Joints for position 
+    p04 = R.getQ1()
+    p14 = R.getQ2(p04)
+    p24 = R.getQ3(p04)
+
+    #Joints for orientation
     
 
 
