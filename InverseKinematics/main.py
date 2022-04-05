@@ -38,14 +38,17 @@ if __name__ == "__main__":
     baseMatrix = np.identity(4)
 
     #Coding of inverse kinematics
-    R = Robot(dhMatrix,qlims,toolMatrix,qOffset,baseMatrix,T)
+    R = Robot("KUKA 6DOF",dhMatrix,qlims,toolMatrix,qOffset,baseMatrix,T)
     
     # Joints for position 
     p04 = R.getQ1()
     p14 = R.getQ2(p04)
     p24 = R.getQ3(p04)
+    print(R.qfinal)
 
     #Joints for orientation
-    
+
+
+
 
 
