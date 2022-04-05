@@ -1,5 +1,7 @@
+from array import array
 import numpy as np
 import math
+
 
 def invHomog(matrix) -> np.array:
     '''
@@ -54,9 +56,28 @@ def trotz(alpha) -> np.array:
 
 def transl(xyzTrans:list) -> np.array:
     '''
-    It translates the matrix to the xyzTrans point.
+    It translates the identity matrix to the xyzTrans point.
     '''
     xyz = np.array(xyzTrans)
     translMatrix = np.identity(4)
     translMatrix[:3,3]=xyz
     return translMatrix
+
+def matmul(*args) -> np.array:
+    '''
+    Simplify the operation of multipliying multiple matrix
+    '''
+    prod = np.identity(4)
+    for matrix in args:
+        prod = np.matmul(prod,matrix)
+    
+    return prod 
+
+
+def Adh(dh,q) -> np.array:
+    '''
+    It calculates the homogeneus matrix for different given q values
+    '''
+    dh2T = matmul(trotz(q),transl([0,0, dh[0,1]]),transl([dh[0,2], 0, 0]),trotx(dh[0,3]))
+
+    return dh2T
