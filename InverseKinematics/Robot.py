@@ -1,14 +1,20 @@
 import numpy as np
-from Matrix import invHomog,trotx,troty,trotz,transl
+from Matrix import *
 from typing import List,Dict 
 import math
 
 class Robot:
-    def __init__(self,dhMatrix,qlims,toolMatrix,qOffset,base,T) -> None:
-        # Joints
+    def __init__(self,name,dhMatrix,qlims,toolMatrix,qOffset,base,T) -> None:
+        # Name
+        self.name = name 
+
+        # Position Joints
         self.q1 = np.array(2)
         self.q2 = np.array(4)
         self.q3 = np.array(4)
+
+        # Orientation Joints
+
 
         # Robot Features
         self.dh = dhMatrix
@@ -27,6 +33,7 @@ class Robot:
         It calculates the position of the point p04, which is located in the wistle of the robot. The
         wistle is the intersection between the last 3 axis. We work using STATIC TYPING.
         '''
+
         a:np.array = invHomog(self.base)*self.T
         self.T:np.array = a*invHomog(self.tool)
         p04:np.array = self.T[:3,3]- self.dh[5,1]* self.T[:3,3]
@@ -36,6 +43,7 @@ class Robot:
         '''
         It calculates the possible values for the first joint. In this case, we have 2 possible values.
         '''
+
         p04 = self.calculatePosition()
         q1 = np.zeros(2)
         q1[0] = math.atan2(p04[1],p04[0])
@@ -56,14 +64,13 @@ class Robot:
         '''
         It calculates 4 possible values for the second joint. They depend on the q1 value.
         '''
+
         alphaVerify = list()
         q2 = np.zeros(4)
         j=0
         for i in range(2):
             #First, we get the new homogeneous matrix, then we get p14 point
-            T1a = np.matmul(trotz(self.q1[i]),transl([0,0,self.dh[0,1]]))
-            T1b = np.matmul(T1a,transl([self.dh[0,2], 0, 0]))
-            T1 = np.matmul(T1b,trotx(self.dh[0,3]))
+            T1 = matmul(trotz(self.q1[i]),transl([0,0,self.dh[0,1]]),transl([self.dh[0,2], 0, 0]),trotx(self.dh[0,3]))
             p14 = np.matmul(invHomog(T1),np.array([p04[0],p04[1],p04[2],1]))
 
             #Secondly, we calculate the beta angle, L1,L2 and the diagonal. 
@@ -93,6 +100,7 @@ class Robot:
         '''
          It calculates 4 possible values for the third joint. They depend on the q1 and q2 value.
         '''
+        
         q3 = np.zeros(4)
         j=0
         for i in range(4):
@@ -103,12 +111,9 @@ class Robot:
                  T1a = np.matmul(trotz(self.q1[1]),transl([0,0,self.dh[0,1]]))
 
             # Calculate T2
-            T1b = np.matmul(T1a,transl([self.dh[0,2],0,0]))
-            T1 = np.matmul(T1b,trotx(self.dh[0,3]))
-            T12a = np.matmul(trotz(self.q2[i]),transl([0,0,self.dh[1,1]]))
-            T12b = np.matmul(T12a,transl([self.dh[1,2],0,0]))
-            T12 = np.matmul(T12b,trotx(self.dh[0,3]))
-            T2 = np.matmul(T1,T12)
+            T1 = matmul(T1a,transl([self.dh[0,2],0,0]),trotx(self.dh[0,3]))
+            T12 = matmul(trotz(self.q2[i]),transl([0,0,self.dh[1,1]]),transl([self.dh[1,2],0,0]),trotx(self.dh[0,3]))
+            T2 = matmul(T1,T12)
 
             # Calculate the first 2 values for q1
             p24 = np.matmul(invHomog(T2),np.array([p04[0],p04[1],p04[2],1]))
@@ -120,3 +125,13 @@ class Robot:
 
         self.q3 = q3
         return p24
+    
+    def getQ4(self) -> np.array:
+
+        pass
+    
+    def getQ5(self) -> np.array:
+        pass
+
+    def getQ6(self) -> np.array:
+        pass
