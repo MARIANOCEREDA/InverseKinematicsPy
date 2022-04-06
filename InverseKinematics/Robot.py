@@ -71,7 +71,7 @@ class Robot:
         for i in range(2):
             #First, we get the new homogeneous matrix, then we get p14 point
             T1 = matmul(trotz(self.q1[i]),transl([0,0,self.dh[0,1]]),transl([self.dh[0,2], 0, 0]),trotx(self.dh[0,3]))
-            p14 = np.matmul(invHomog(T1),np.array([p04[0],p04[1],p04[2],1]))
+            p14 = matmul(invHomog(T1),np.array([p04[0],p04[1],p04[2],1]))
 
             #Secondly, we calculate the beta angle, L1,L2 and the diagonal. 
             beta = math.atan2(p14[1],p14[0])
@@ -91,7 +91,9 @@ class Robot:
             j+=1
         
         #Finally, we fill out the q2 array with the previously obtained values
-        self.qfinal[1,:]=[q2[0],q2[0],q2[1],q2[1],q2[2],q2[2],q2[3],q2[3]]
+        q2tot = list(map(lambda x,y:[x,y],q2,q2))
+        q2flatter = [item for lista in q2tot for item in lista]
+        self.qfinal[1,:]= q2flatter
         self.q2 = q2
 
         return p14
@@ -121,9 +123,11 @@ class Robot:
             j+=1
 
         # We fill out the matrix containing all the possible results wit Q3
-        self.qfinal[2,:]= [q3[0],q3[0],q3[1],q3[1],q3[2],q3[2],q3[3],q3[3]]
-
+        q3tot = list(map(lambda x,y:[x,y],q3,q3))
+        q3flatter = [item for lista in q3tot for item in lista]
+        self.qfinal[2,:]= q3flatter
         self.q3 = q3
+        
         return p24
     
     def getQ4(self) -> np.array:
@@ -135,3 +139,4 @@ class Robot:
 
     def getQ6(self) -> np.array:
         pass
+

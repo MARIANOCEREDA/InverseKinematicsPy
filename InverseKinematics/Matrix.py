@@ -1,6 +1,8 @@
 from array import array
+from ctypes import sizeof
 import numpy as np
 import math
+from functools import reduce
 
 
 def invHomog(matrix) -> np.array:
@@ -67,11 +69,9 @@ def matmul(*args) -> np.array:
     '''
     Simplify the operation of multipliying multiple matrix
     '''
-    prod = np.identity(4)
-    for matrix in args:
-        prod = np.matmul(prod,matrix)
-    
-    return prod 
+    result = np.array(reduce(lambda m1,m2:np.matmul(m1,m2),args))
+
+    return result
 
 
 def Adh(dh,q) -> np.array:
