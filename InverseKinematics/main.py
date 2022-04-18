@@ -37,13 +37,17 @@ if __name__ == "__main__":
     #Base matrix
     baseMatrix = np.identity(4)
 
+    #Last q
+    qant = np.zeros(6)
+
     #Coding of inverse kinematics
     R = Robot("KUKA 6DOF",dhMatrix,qlims,toolMatrix,qOffset,baseMatrix,T)
-    
+
     # Joints for position 
     p04 = R.getQ1()
     p14 = R.getQ2(p04)
     p24 = R.getQ3(p04)
+    R.getQ456(qant)
     print(R.qfinal)
 
     #Joints for orientation

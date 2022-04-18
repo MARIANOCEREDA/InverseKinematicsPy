@@ -1,7 +1,11 @@
+from asyncio import constants
+from tkinter.tix import DisplayStyle
 import numpy as np
 from Matrix import *
 from typing import List,Dict 
 import math
+
+EPS = np.finfo(float).eps
 
 class Robot:
     def __init__(self,name,dhMatrix,qlims,toolMatrix,qOffset,base,T) -> None:
@@ -9,12 +13,14 @@ class Robot:
         self.name = name 
 
         # Position Joints
-        self.q1 = np.array(2)
-        self.q2 = np.array(4)
-        self.q3 = np.array(4)
+        self.q1 = np.array(2,dtype='float32')
+        self.q2 = np.array(4,dtype='float32')
+        self.q3 = np.array(4,dtype='float32')
 
         # Orientation Joints
-
+        self.q4 = np.zeros(2,dtype='float32')
+        self.q5 = np.zeros(2,dtype='float32')
+        self.q6 = np.zeros(2,dtype='float32')
 
         # Robot Features
         self.dh = dhMatrix
@@ -130,13 +136,49 @@ class Robot:
         
         return p24
     
-    def getQ4(self) -> np.array:
+    def getQ456(self,qant:np.array) -> np.array:
+        '''
+        It calculates the last 3 joint values.E.g the rotation joints
+        '''
 
-        pass
-    
-    def getQ5(self) -> np.array:
-        pass
+        k = 0 
+        for i in range(0,7,2):
+            T10 = Adh(self.dh,self.qfinal[0,i])
+            T21 = Adh(self.dh,self.qfinal[1,i])
+            T32 = Adh(self.dh,self.qfinal[2,i])
+            T63 = matmul(invHomog(T32),invHomog(T21),invHomog(T10),self.T)
 
-    def getQ6(self) -> np.array:
-        pass
+            # Degenerate solution
+            if abs(T63[2,2]-1) < EPS:
+                self.q4[0] = qant[3]
+                self.q5[0] = 0
+                self.q6[0] = math.atan2(T63[1,0], T63[0,0]) - self.q4[0]
+                self.q4[1] = self.q4[0]
+                self.q5[1] = 0
+                self.q6[1] = self.q6[0]
+
+            #Normal solution
+            else:
+                self.q4[0] = math.atan2(-T63[1,2],-T63[0,2])
+                if (self.q4[0]>0):
+                    self.q4[1] = self.q4[0] - np.pi
+                else:
+                    self.q4[1] = self.q4[0] + np.pi
+                #q5 = np.zeros(1,2)
+                #q6 = q5
+                for m in range(0,1,1):
+                    T43 = Adh(self.dh, self.q4[m])
+                    T46 = matmul(invHomog(T43),T63)
+                    self.q5[m] = math.atan2(-T46[0,2],T46[1,2])+np.pi
+                    T45 = matmul(trotz(self.q5[m]),transl([0,0,self.dh[4,1]]),transl([self.dh[4,2],0,0]),trotx(self.dh[4,3]))
+                    T56 = matmul(invHomog(T45),T46)
+                    self.q6[m] = math.atan2(T56[1,0], T56[0,0])
+                self.qfinal[3,k:k+1]=self.q4[1:2] 
+                self.qfinal[4,k:k+1]=self.q5[1:2] 
+                self.qfinal[5,k:k+1]=self.q6[1:2]
+                k+=2
+                self.qfinal = self.qfinal - matmul(self.qoffset.transpose(),np.ones(7))
+
+
+
 
