@@ -31,7 +31,7 @@ if __name__ == "__main__":
     ql6:List[float] = [-350,350]
     qlims = np.array([ql1,ql2,ql3,ql4,ql5,ql6])*np.pi/180
 
-    #Too matrix
+    #Tool matrix
     toolMatrix = np.identity(4)
 
     #Base matrix
@@ -47,10 +47,12 @@ if __name__ == "__main__":
     p04 = R.getQ1()
     p14 = R.getQ2(p04)
     p24 = R.getQ3(p04)
-    R.getQ456(qant)
-    print(R.qfinal)
-
+    
     #Joints for orientation
+    R.getQ456(qant)
+
+    #Final matrix with all the possible values
+    print(R.qfinal)
 
 
 
