@@ -1,6 +1,7 @@
 from typing import Dict
 import numpy as np
 
+
 def limitsVerification(qlims:np.array,q:np.array) -> Dict:
     '''
     This function verify if the introduced vector of joint values are inside the bounds of the workspace.
